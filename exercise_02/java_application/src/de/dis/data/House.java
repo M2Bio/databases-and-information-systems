@@ -82,7 +82,7 @@ public class House extends Estate {
     }
 
     public void save() {
-        Connection con = DbConnectionManager.getInstance().getConnection();
+        Connection con = DbConnectionManager.getInstance().getConnection(); //.setAutoCommit(false)
         try {
             String query = "INSERT INTO estate (city, postal_code, street, street_number, square_area, agent_id) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -136,6 +136,7 @@ public class House extends Estate {
     }
 
     public void delete() {
+        //  TODO: on delete cascade
         Connection con = DbConnectionManager.getInstance().getConnection();
         try {
             String query = "DELETE FROM estate WHERE estate_id = ?";

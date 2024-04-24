@@ -18,7 +18,7 @@ CREATE TABLE estate
     postal_code   VARCHAR(10)  NOT NULL,
     street        VARCHAR(255) NOT NULL,
     street_number VARCHAR(10)  NOT NULL,
-    square_area   NUM   ERIC      NOT NULL,
+    square_area   NUMERIC      NOT NULL,
     agent_id      INT          NOT NULL,
     FOREIGN KEY (agent_id) REFERENCES estate_agent (agent_id)
 );
