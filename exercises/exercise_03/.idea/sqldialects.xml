@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/3_1/a).sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/3_1/b).sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_1/b.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_1/c_1.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_1/c_2.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_2/a_n_autocommit.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_2/a_w_autocommit.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_2/c_1.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_2/c_2.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/3_2/e_1.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>
