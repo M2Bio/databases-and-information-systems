@@ -59,3 +59,93 @@ Editing (update or delete) the same row from two different transactions will lea
 Updating the same row in swapped order from two different connections will result in a deadlock:
 
     [40P01] ERROR: deadlock detected Detail: Process 40769 waits for ShareLock on transaction 3137204; blocked by process 40772. Process 40772 waits for ShareLock on transaction 3137203; blocked by process 40769. Hint: See server log for query details. Where: while updating tuple (0,11) in relation "sheet3"
+
+## 3.3 Scheduling
+
+### a)
+
+    INSERT INTO dissheet3 (id, name) VALUES (1, 'Goofy'),(2, 'Donald'),(3, 'Tick'), (4, 'Trick'),(5, 'Track');
+
+S1:
+
+    c1 reads (1, 'Goofy')
+    c2 updates (1, 'Goofy') to (1, 'Mickey')
+    c2 commits 
+    c1 updates (1, 'Mickey') to (1, 'Mickey + Max')
+    c1 reads (1, 'Mickey + Max')
+    c1 commits
+    ----
+    1,Mickey + Max
+    2,Donald
+    3,Tick
+    4,Trick
+    5,Track
+
+S2:
+
+    c1 reads (1, 'Goofy')
+    c2 updates (1, 'Goofy') to (1, 'Mickey')
+    c2 commits
+    c1 reads (1, 'Mickey')
+    c1 commits
+    ----
+    1,Mickey
+    2,Donald
+    3,Tick
+    4,Trick
+    5,Track
+
+S3:
+
+    c2 reads (1, 'Goofy')
+    c1 updates (1, 'Goofy') to (1, 'Mickey')
+    c1 updates (2, 'Donald') to (2, 'Minnie')
+    c1 commits
+    c2 reads (2, 'Minnie')
+    c2 updates (1, 'Mickey') to (1, 'Donald')
+    c2 updates (2, 'Minnie') to (2, 'Daisy')
+    c2 commits
+    ----
+    1,Donald
+    2,Daisy
+    3,Tick
+    4,Trick
+    5,Track
+
+### b)
+
+S1:
+
+    1,Mickey
+    2,Donald
+    3,Tick
+    4,Trick
+    5,Track
+
+S2:
+
+    1,Mickey
+    2,Donald
+    3,Tick
+    4,Trick
+    5,Track
+
+S3:
+
+    1,Mickey
+    2,Minnie
+    3,Tick
+    4,Trick
+    5,Track
+
+### c)
+
+The result does differ and SQL throws an error:
+
+    ERROR: could not serialize access due to concurrent update
+
+The conflict graph would look like this:
+
+![Conflict Graph](conflict_graph.png)
+
+Therefore not serializable.

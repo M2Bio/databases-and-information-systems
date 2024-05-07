@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 public class Main {
 
     public static void main(String[] args) throws SQLException, InterruptedException {
-
         // Setup
         Connection i1 = setup_new_connection();
         Statement cs = i1.createStatement();
@@ -28,24 +27,79 @@ public class Main {
 
         Connection c1 = setup_new_connection();
         c1.setAutoCommit(false);
-        //c1.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        //c1.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        c1.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c1.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
         Connection c2 = setup_new_connection();
         c2.setAutoCommit(false);
-        //c2.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        //c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        c2.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c2.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-        
-        
-        //S1 = r1(x) w2(x) c2 w1(x) r1(x) c1
-        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
 
-                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
-                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
-                new RunnableOperation(c2, 'c', "COMMIT;"),
-                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = name || ' + Max' WHERE id = 1;"),
-                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
-                new RunnableOperation(c1, 'c', "COMMIT;"))
+        // a)
+        //S1 = r1(x) w2(x) c2 w1(x) r1(x) c1
+//        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+//                new RunnableOperation(c2, 'c', "COMMIT;"),
+//                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = name || ' + Max' WHERE id = 1;"),
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+//                new RunnableOperation(c1, 'c', "COMMIT;"))
+//        );
+
+        //S2 = r1(x) w2(x) c2 r1(x) c1
+//        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+//                new RunnableOperation(c2, 'c', "COMMIT;"),
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+//                new RunnableOperation(c1, 'c', "COMMIT;"))
+//        );
+
+        //S3 = r2(x) w1(x) w1(y) c1 r2(y) w2(x) w2(y) c2
+//        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+//                new RunnableOperation(c2, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+//                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+//                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = 'Minnie' WHERE id = 2;"),
+//                new RunnableOperation(c1, 'c', "COMMIT;"),
+//                new RunnableOperation(c2, 'r', "SELECT name FROM dissheet3 WHERE id = 2;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Donald' WHERE id = 1;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Daisy' WHERE id = 2;"),
+//                new RunnableOperation(c2, 'c', "COMMIT;"))
+//        );
+
+        // b) Lock management row-wise (RX Locking). Achieve serializability by using SS2PL
+        //S1 = r1(x) w2(x) c2 w1(x) r1(x) c1
+//        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1 FOR UPDATE;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+//                new RunnableOperation(c2, 'c', "COMMIT;"),
+//                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = name || ' + Max' WHERE id = 1;"),
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1 FOR UPDATE;"),
+//                new RunnableOperation(c1, 'c', "COMMIT;"))
+//        );
+
+        //S2 = r1(x) w2(x) c2 r1(x) c1
+//        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1 FOR UPDATE;"),
+//                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+//                new RunnableOperation(c2, 'c', "COMMIT;"),
+//                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1 FOR UPDATE;"),
+//                new RunnableOperation(c1, 'c', "COMMIT;"))
+//        );
+
+        //S3 = r2(x) w1(x) w1(y) c1 r2(y) w2(x) w2(y) c2
+        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
+                new RunnableOperation(c2, 'r', "SELECT name FROM dissheet3 WHERE id = 1 FOR UPDATE;"),
+                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = 'Minnie' WHERE id = 2;"),
+                new RunnableOperation(c1, 'c', "COMMIT;"),
+                new RunnableOperation(c2, 'r', "SELECT name FROM dissheet3 WHERE id = 2 FOR UPDATE;"),
+                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Donald' WHERE id = 1;"),
+                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Daisy' WHERE id = 2;"),
+                new RunnableOperation(c2, 'c', "COMMIT;"))
         );
+
         ExecutorService executor_t1 = Executors.newFixedThreadPool(1);
         ExecutorService executor_t2 = Executors.newFixedThreadPool(1);
         for (RunnableOperation op : operations) {
@@ -69,7 +123,6 @@ public class Main {
 
         System.out.println("Finished all threads");
 
-
         // GET Table at the end
         Connection i2 = setup_new_connection();
         Statement cs2 = i2.createStatement();
@@ -77,7 +130,6 @@ public class Main {
         while (rs.next())
             System.out.println(Integer.toString(rs.getInt("id")) + "," + rs.getString("name"));
         cs2.close();
-
     }
 
 
