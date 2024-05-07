@@ -12,8 +12,7 @@
 The current isolation level of dis-2024:
 
     SQL: SHOW TRANSACTION ISOLATION LEVEL;
-    
-Output: read committed
+    Output: read committed
 
 ### b)
 
