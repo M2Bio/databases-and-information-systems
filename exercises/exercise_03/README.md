@@ -9,9 +9,11 @@
     Repeatable read
     Serializable
 
-    The current isolation level of dis-2024:
-        SQL: SHOW TRANSACTION ISOLATION LEVEL;
-        Output: read committed
+The current isolation level of dis-2024:
+
+    SQL: SHOW TRANSACTION ISOLATION LEVEL;
+    
+Output: read committed
 
 ### b)
 
