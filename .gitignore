@@ -3,3 +3,6 @@ exercises/exercise_03/dis_task3/bin/*
 exercises/exercise_03/dis_task3/db.properties
 exercises/exercise_05/data/movies.json
 exercises/exercise_05/data/tweets.json
+exercises/exercise_05/java/src/data/tweets.json
+exercises/exercise_05/java/src/data/movies.json
+exercises/exercise_05/java/target/*
