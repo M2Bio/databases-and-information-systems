@@ -9,8 +9,5 @@
         <module name="MongoDB-Task" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="MongoDB-Task" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
