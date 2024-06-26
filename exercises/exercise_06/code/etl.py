@@ -193,7 +193,6 @@ def insert_from_csv_file(csv_file, conn_data_warehouse, test_mode=False):
     Example row:
     01.01.2019;Superstore Berlin;AEG Öko Lavatherm 59850 Sensidry;25;24975,00
     """
-    # csv_reader = pd.read_csv(csv_file, sep=";", encoding="ISO-8859-15", low_memory=False)
     counter = 0
     with open(csv_file, "r", encoding="ISO-8859-15") as file:
         next(file)  # skip the header
