@@ -8,28 +8,10 @@ Fact table:
 """
 
 import csv
-
-import pandas as pd
 import psycopg2
 
-conn_data_source = psycopg2.connect(
-    dbname="data_source",
-    user="postgres",
-    password="postgres",
-    host="localhost",
-    port="5432",
-)
 
-conn_data_warehouse = psycopg2.connect(
-    dbname="data_warehouse",
-    user="postgres",
-    password="postgres",
-    host="localhost",
-    port="5433",
-)
-
-
-def create_tables():
+def create_tables(conn_data_warehouse):
     with conn_data_warehouse.cursor() as cursor:
         # if tables do already exist, return
         cursor.execute(
@@ -84,7 +66,7 @@ def create_tables():
     conn_data_warehouse.commit()
 
 
-def insert_from_source_database():
+def insert_from_source_database(conn_data_source, conn_data_warehouse):
     """
     Inserting data from the source database to the data warehouse, i.e. the data from
     stores-and-products.sql
@@ -116,6 +98,7 @@ def insert_from_source_database():
                     """
                     INSERT INTO Shop (ShopID, Name, City, Region, Country)
                     VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT DO NOTHING
                     """,
                     shop,
                 )
@@ -127,6 +110,7 @@ def insert_from_source_database():
                     """
                     INSERT INTO Article (ArticleID, Name, ProductGroup, ProductFamily, ProductCategory)
                     VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT DO NOTHING
                     """,
                     article,
                 )
@@ -134,9 +118,120 @@ def insert_from_source_database():
     conn_data_warehouse.commit()
 
 
-if __name__ == "__main__":
-    # check if tables exist if not create them
-    create_tables()
+def insert_row(row, conn_data_warehouse):
+    with conn_data_warehouse.cursor() as cursor:
+        # check if the row is valid
+        if len(row) != 5:
+            return
+        # check if any of the values is empty
+        if "" in row:
+            return
+        date = row[0]
+        date = "-".join(reversed(date.split(".")))
+        day = date.split("-")[2]
+        month = date.split("-")[1]
+        quarter = (int(month) - 1) // 3 + 1
+        year = date.split("-")[0]
+        shop = row[1]
+        article = row[2]
+        sold = row[3]
+        revenue = row[4]
+        revenue = revenue.replace(",", ".")
 
-    # insert data from source database
-    insert_from_source_database()
+        cursor.execute(
+            """
+            SELECT ShopID FROM Shop WHERE Name = %s
+            """,
+            (shop,),
+        )
+        shop_id = cursor.fetchone()
+        if not shop_id:
+            return
+
+        cursor.execute(
+            """
+            SELECT ArticleID FROM Article WHERE Name = %s
+            """,
+            (article,),
+        )
+        article_id = cursor.fetchone()
+        if not article_id:
+            return
+
+        cursor.execute(
+            """
+            INSERT INTO Date (WholeDate, Day, Month, Quarter, Year)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT DO NOTHING
+            """,
+            (
+                date,
+                day,
+                month,
+                quarter,
+                year,
+            ),
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO fact_table (WholeDate, ShopID, ArticleID, Sold, Revenue)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT DO NOTHING
+            """,
+            (date, shop_id, article_id, sold, revenue),
+        )
+
+    conn_data_warehouse.commit()
+
+
+def insert_from_csv_file(csv_file, conn_data_warehouse, test_mode=False):
+    """
+    Inserting data from the csv file to the data warehouse
+    The file has the header columns:
+    Date;Shop;Article;Sold;Revenue
+    Example row:
+    01.01.2019;Superstore Berlin;AEG Öko Lavatherm 59850 Sensidry;25;24975,00
+    """
+    # csv_reader = pd.read_csv(csv_file, sep=";", encoding="ISO-8859-15", low_memory=False)
+    counter = 0
+    with open(csv_file, "r", encoding="ISO-8859-15") as file:
+        next(file)  # skip the header
+        csv_reader = csv.reader(file, delimiter=";")
+
+        for row in csv_reader:
+            insert_row(row, conn_data_warehouse)
+            counter += 1
+            if test_mode and counter > 100:
+                break
+
+
+def main():
+    conn_data_source = psycopg2.connect(
+        dbname="data_source",
+        user="postgres",
+        password="postgres",
+        host="localhost",
+        port="5432",
+    )
+
+    conn_data_warehouse = psycopg2.connect(
+        dbname="data_warehouse",
+        user="postgres",
+        password="postgres",
+        host="localhost",
+        port="5433",
+    )
+
+    create_tables(conn_data_warehouse)
+    insert_from_source_database(conn_data_source, conn_data_warehouse)
+
+    csv_file = "data/sales.csv"
+    insert_from_csv_file(csv_file, conn_data_warehouse, test_mode=False)
+
+    conn_data_source.close()
+    conn_data_warehouse.close()
+
+
+if __name__ == "__main__":
+    main()
