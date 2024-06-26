@@ -1,12 +1,3 @@
-"""
-Fact table:
-    Date
-    ShopID --> ShopID(name, city, region, country)
-    ArticleID --> ArticleID(name, ProductGroup, ProductFamily, ProductCategory)
-    Sold
-    Revenue
-"""
-
 import csv
 import psycopg2
 
