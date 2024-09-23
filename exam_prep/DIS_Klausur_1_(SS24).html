@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>DIS_Klausur_1_(SS24)</title>
+<meta name="generator" content="Etherpad">
+<meta name="author" content="Etherpad">
+<meta name="changedby" content="Etherpad">
+<meta charset="utf-8">
+<style>
+ol {
+  counter-reset: item;
+}
+
+ol > li {
+  counter-increment: item;
+}
+
+ol ol > li {
+  display: block;
+}
+
+ol > li {
+  display: block;
+}
+
+ol > li:before {
+  content: counters(item, ".") ". ";
+}
+
+ol ol > li:before {
+  content: counters(item, ".") ". ";
+  margin-left: -20px;
+}
+
+ul.indent {
+  list-style-type: none;
+}
+
+h1{font-size: 2.5em;}
+h2{font-size: 1.8em;}
+h3{font-size: 1.5em;}
+h4{font-size: 1.2em;}
+code{font-family: RobotoMono;}
+
+</style>
+</head>
+<body>
+<br>GPROT DIS Exam 1 (SS24, 31.07.2024)<br><br><br>1)<br><ul class="indent"><li>(multiple)</li><li>Different schedules:<ul class="indent"><li>S1 = r1(x) r2(y) .... c1 c2 a3 were given.</li><li>Determine if any anomalies occur, if yes which and explain why. (Dirty Read, Lost Update etc...)</ul><li>()</li><li>Serialisability:<ul class="indent"><li>A schedule was given, explain why it is not serialisable. Explain via graph.</ul><li>()</li><li>Globally Locally quasi serialisable:<ul class="indent"><li>A schedule was given where two processes were global and one was local.</li><li>Is it globally&#x2F;locally quasi serialisable?</ul></li></ul><br>2) locking<br><ul class="indent"><li>()<ul class="indent"><li>Describe 2PL.</ul><li>()<ul class="indent"><li>Given a schedule, determine if this could be a result of a 2 phase locking scheduler. Write down the schedule including all read&#x2F;write locking&#x2F;unlocking.</ul><li>()<ul class="indent"><li>Describe two variations of 2PL.</ul><li>()<ul class="indent"><li>Given a schedule write down the wait for graph.</ul><li>()<ul class="indent"><li>Describe how deadlocks can be noticed, and describe how the losing transaction can be determined.</ul><li>()<ul class="indent"><li>An image of three transactions was given (like in lecture), apply BOCC to T1 and describe what happens. What changes if you use BOCC+?</ul></li></ul><br>3) logging and recovery<br><ul class="indent"><li>()<ul class="indent"><li>You were given the logs of 3 transactions. The system was steal and no force, and crashed. Comple the analysis redo and undo phase. (you had to remember the structure of compensation logs)</ul><li>()<ul class="indent"><li>Was what you did logical or physical logging?</ul><li>()<ul class="indent"><li>Name and describe two checkpointing methods.</li></ul></li></ul>4) no sql<br><ul class="indent"><li>()<ul class="indent"><li>name two graph models and describe their difference.</ul><li>()<ul class="indent"><li>how would you model a N:1 relation in nodejs? draw a diagram.</ul><li>()&nbsp;<ul class="indent"><li>What does CAP stand for, what does the theorem say?</ul><li>()<ul class="indent"><li>Contrast ACID and BASIC with regard to the CAP theorem.</ul><li>()<ul class="indent"><li>given an adjacency matrix create the CSR.</ul></li></ul><br><br>5) data warehouse<br><ul class="indent"><li>()<ul class="indent"><li>Given was a schema kind of like this:<ul class="indent"><li>enrollments(<strong>enrollmentID</strong>, studentID --&gt; students.studentID, lecturerID --&gt; lecturers.lecturerID, lectureID --&gt; lectures.lectureID, enrollment_date, grade, attendance)</li><li>students(<strong>studentID</strong>, firstname, lastname, date_of_birth, gender, address, phone_number, email, enrollment_date)</li><li>lectures(<strong>lectureID</strong>, course_name, course_description, lecturer)</li><li>departments(<strong>departmentID</strong>, department_name, department_head)</ul></li></ul><li>()<ul class="indent"><li>What kind of schema is this?</ul><li>()<ul class="indent"><li>What are the fact tables, what are the dimension tables?</ul><li>()<ul class="indent"><li>Add the entity &quot;lecturers&quot; with primary key lecturers.lercturerID, and attributes x, y. Let lectures.lecturer be a foreign key pointing to lecturers.Name.</ul><li>()&nbsp;<ul class="indent"><li>What kind of schema is it now?</ul><li>()<ul class="indent"><li>What are three different qualities classical DWH have?</ul><li>()<ul class="indent"><li>Given some example scenarios say if it is drill down, roll up, slice, dice or drill across (names not given)</ul><li>()<ul class="indent"><li>Given three example scenarios say if it is flow, stock or VPU (names not given)</li></ul></li></ul>6)<br><ul class="indent"><li>()<ul class="indent"><li>Calculate the Levenstein distance between summer and winter (matrix given to fill out).</ul><li>()<ul class="indent"><li>Points on a line were given + two centroid points. Perform kmeans untill it converges (or max 5 iterations).</ul><li>()<ul class="indent"><li>Name the 4 different parts of a time series (pictures given).</ul><li>()<ul class="indent"><li>Give 2 time series examples belonging to the categories:<ul class="indent"><li>(Auto) Regression</li><li>Exponential Smoothing</ul></li></ul><li>()<ul class="indent"><li>What is the difference between SAX and PAA, what distance function can be used for SAX?</ul></li></ul><br><br>Potpourri&nbsp;<br>Multiple true&#x2F;false questions:<br>In the 5 layer model the Buffer is between the File and the Access System.<br><br>The user need to program the shuffle when using map and reduce.<br><br>After moving a record the same TID can still be used.<br><br>The Kappa architecture does not use batching.<br><br>The Row store is mainly used for analysis access of data.<br><br>LSM Tiering holds multiple runs per layer.<br><br>ETL stands for expanding, transform, loading.<br><br>In fragmentation transparency the user needs to know fragmentation &amp; allocation.<br><br>Stream processing works with partial data and has low end to end latency.<br><br>The order of attributes in an aggregate index is not important.<br><br>All correct schedules of a set of transactions is equivalent.<br><br>Materialisation is only there to make queries shorter.<br><br>------------------------------------<br>Unsure leftovers:<br>(true&#x2F;false) something about 1:n in regards to aggregation and data shuffeling.<br>(true&#x2F;false) Polystore means both ... and ....<br>Some question regarding data skew<br><br>
+</body>
+</html>
